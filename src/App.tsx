@@ -98,8 +98,6 @@ function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 text-black/40 text-xs uppercase tracking-widest">
         <div>© {new Date().getFullYear()} {about?.name || "Eunpyo"}. ALL RIGHTS RESERVED.</div>
         <div className="flex space-x-8">
-          <a href="#" className="hover:text-black transition-colors">Instagram</a>
-          <a href="#" className="hover:text-black transition-colors">Email</a>
           <Link to="/admin" className="hover:text-black transition-colors">Admin</Link>
         </div>
       </div>

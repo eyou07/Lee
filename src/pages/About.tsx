@@ -22,7 +22,7 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
         <div className="aspect-[3/4] bg-neutral-100 overflow-hidden">
           <img 
-            src="https://picsum.photos/seed/designer/800/1200" 
+            src={content.image || "https://picsum.photos/seed/designer/800/1200"} 
             alt="Designer" 
             className="w-full h-full object-cover grayscale"
             referrerPolicy="no-referrer"

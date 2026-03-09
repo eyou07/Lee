@@ -82,12 +82,15 @@ export default function Admin() {
       const data = await res.json();
       
       if (data.url) {
-        if (field === "gallery") {
-          const currentGallery = editingProject?.gallery || [];
-          setEditingProject({ ...editingProject, gallery: [...currentGallery, data.url] });
-        } else {
-          setEditingProject({ ...editingProject, [field]: data.url });
-        }
+        setEditingProject(prev => {
+          if (!prev) return prev;
+          if (field === "gallery") {
+            const currentGallery = prev.gallery || [];
+            return { ...prev, gallery: [...currentGallery, data.url] };
+          } else {
+            return { ...prev, [field]: data.url };
+          }
+        });
       }
     } catch (err) {
       console.error("Upload failed", err);
@@ -223,6 +226,37 @@ export default function Admin() {
 
       {activeTab === "about" && aboutContent && (
         <div className="max-w-2xl space-y-8">
+          <div className="space-y-4">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Profile Image</label>
+            <div className="flex items-center space-x-6">
+              <div className="w-32 h-40 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden">
+                {aboutContent.image ? <img src={aboutContent.image} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={24} className="text-black/20" />}
+              </div>
+              <label className="cursor-pointer flex items-center space-x-2 bg-black text-white px-4 py-2 text-[10px] uppercase tracking-widest hover:bg-black/80 transition-colors">
+                <Upload size={14} />
+                <span>{isUploading ? "Uploading..." : "Change Image"}</span>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setIsUploading(true);
+                    const formData = new FormData();
+                    formData.append("image", file);
+                    try {
+                      const res = await fetch("/api/upload", { method: "POST", body: formData });
+                      const data = await res.json();
+                      if (data.url) setAboutContent({ ...aboutContent, image: data.url });
+                    } finally {
+                      setIsUploading(false);
+                    }
+                  }} 
+                  accept="image/*" 
+                />
+              </label>
+            </div>
+          </div>
           <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-widest text-black/40">Name</label>
             <input 
@@ -396,7 +430,7 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Main Image</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.mainImage ? <img src={editingProject.mainImage} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.mainImage ? <img src={editingProject.mainImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
@@ -411,7 +445,7 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Result Image</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.resultImage ? <img src={editingProject.resultImage} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.resultImage ? <img src={editingProject.resultImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
@@ -426,7 +460,7 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Concept Image</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.conceptImage ? <img src={editingProject.conceptImage} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.conceptImage ? <img src={editingProject.conceptImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
@@ -443,10 +477,11 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Research Img 1</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.researchImage1 ? <img src={editingProject.researchImage1} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.researchImage1 ? <img src={editingProject.researchImage1} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
+                        <span>{isUploading ? "..." : "Upload"}</span>
                         <input type="file" className="hidden" onChange={e => handleFileUpload(e, "researchImage1")} accept="image/*" />
                       </label>
                     </div>
@@ -455,10 +490,11 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Research Img 2</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.researchImage2 ? <img src={editingProject.researchImage2} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.researchImage2 ? <img src={editingProject.researchImage2} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
+                        <span>{isUploading ? "..." : "Upload"}</span>
                         <input type="file" className="hidden" onChange={e => handleFileUpload(e, "researchImage2")} accept="image/*" />
                       </label>
                     </div>
@@ -471,10 +507,11 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Process Img 1</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.processImage1 ? <img src={editingProject.processImage1} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.processImage1 ? <img src={editingProject.processImage1} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
+                        <span>{isUploading ? "..." : "Upload"}</span>
                         <input type="file" className="hidden" onChange={e => handleFileUpload(e, "processImage1")} accept="image/*" />
                       </label>
                     </div>
@@ -483,10 +520,11 @@ export default function Admin() {
                     <label className="text-[10px] uppercase tracking-widest text-black/40">Process Img 2</label>
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-neutral-100 border border-black/5 flex items-center justify-center overflow-hidden shrink-0">
-                        {editingProject.processImage2 ? <img src={editingProject.processImage2} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="text-black/20" />}
+                        {editingProject.processImage2 ? <img src={editingProject.processImage2} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <ImageIcon size={16} className="text-black/20" />}
                       </div>
                       <label className="cursor-pointer flex items-center space-x-1 bg-black/5 px-3 py-1.5 text-[9px] uppercase tracking-widest hover:bg-black/10 transition-colors">
                         <Upload size={10} />
+                        <span>{isUploading ? "..." : "Upload"}</span>
                         <input type="file" className="hidden" onChange={e => handleFileUpload(e, "processImage2")} accept="image/*" />
                       </label>
                     </div>
@@ -527,7 +565,7 @@ export default function Admin() {
                 <div className="grid grid-cols-3 gap-2">
                   {editingProject.gallery?.map((img, idx) => (
                     <div key={idx} className="relative aspect-square group bg-neutral-100 border border-black/5">
-                      <img src={img} className="w-full h-full object-cover" />
+                      <img src={img} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       <button 
                         type="button"
                         onClick={() => removeFromGallery(idx)}
@@ -547,11 +585,11 @@ export default function Admin() {
                 <div className="pt-8">
                   <button 
                     type="submit" 
-                    disabled={isSaving}
+                    disabled={isSaving || isUploading}
                     className="w-full bg-black text-white py-4 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors flex items-center justify-center space-x-2 disabled:bg-black/40"
                   >
                     <Save size={16} />
-                    <span>{isSaving ? "Saving..." : "Save Project"}</span>
+                    <span>{isSaving ? "Saving..." : isUploading ? "Uploading..." : "Save Project"}</span>
                   </button>
                 </div>
               </div>
