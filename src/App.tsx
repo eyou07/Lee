@@ -100,6 +100,7 @@ function Footer() {
         <div className="flex space-x-8">
           <a href="#" className="hover:text-black transition-colors">Instagram</a>
           <a href="#" className="hover:text-black transition-colors">Email</a>
+          <Link to="/admin" className="hover:text-black transition-colors">Admin</Link>
         </div>
       </div>
     </footer>
@@ -124,14 +125,6 @@ export default function App() {
           </AnimatePresence>
         </main>
         <Footer />
-        
-        {/* Admin Access Link */}
-        <Link 
-          to="/admin" 
-          className="fixed bottom-6 right-6 text-[10px] uppercase tracking-widest text-black/20 hover:text-black transition-colors z-[100]"
-        >
-          Admin
-        </Link>
       </div>
     </Router>
   );
