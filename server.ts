@@ -75,6 +75,58 @@ if (settingsCount.count === 0) {
   }));
 }
 
+// Seed projects if empty
+const projectsCount = db.prepare("SELECT COUNT(*) as count FROM projects").get() as { count: number };
+if (projectsCount.count === 0) {
+  const insert = db.prepare(`
+    INSERT INTO projects (title, year, category, material, technique, concept, mainImage, conceptImage, researchImage1, researchImage2, processImage1, processImage2, resultImage, researchText, processText, gallery)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  const sampleProjects = [
+    {
+      title: "Woven Memories",
+      year: "2024",
+      category: "Textile",
+      material: "Silk, Cotton, Linen",
+      technique: "Hand Weaving",
+      concept: "Exploring the layers of memory through overlapping textures.",
+      mainImage: "https://picsum.photos/seed/textile1/1200/1600",
+      conceptImage: "https://picsum.photos/seed/concept1/1200/800",
+      researchImage1: "https://picsum.photos/seed/res1/800/800",
+      researchImage2: "https://picsum.photos/seed/res2/800/800",
+      processImage1: "https://picsum.photos/seed/proc1/800/800",
+      processImage2: "https://picsum.photos/seed/proc2/800/800",
+      resultImage: "https://picsum.photos/seed/resul1/1200/1600",
+      researchText: "Initial research focused on traditional Korean weaving patterns.",
+      processText: "The process involved dyeing the silk threads with natural indigo.",
+      gallery: JSON.stringify(["https://picsum.photos/seed/gal1/800/800", "https://picsum.photos/seed/gal2/800/800"])
+    },
+    {
+      title: "Digital Tactility",
+      year: "2023",
+      category: "Drawing",
+      material: "Digital Print on Silk",
+      technique: "Digital Jacquard",
+      concept: "Translating digital glitches into physical woven structures.",
+      mainImage: "https://picsum.photos/seed/textile2/1200/1600",
+      conceptImage: "https://picsum.photos/seed/concept2/1200/800",
+      researchImage1: "https://picsum.photos/seed/res3/800/800",
+      researchImage2: "https://picsum.photos/seed/res4/800/800",
+      processImage1: "https://picsum.photos/seed/proc3/800/800",
+      processImage2: "https://picsum.photos/seed/proc4/800/800",
+      resultImage: "https://picsum.photos/seed/resul2/1200/1600",
+      researchText: "Studying the visual language of data corruption.",
+      processText: "Programming the Jacquard loom to interpret pixel data.",
+      gallery: JSON.stringify(["https://picsum.photos/seed/gal3/800/800", "https://picsum.photos/seed/gal4/800/800"])
+    }
+  ];
+
+  for (const p of sampleProjects) {
+    insert.run(p.title, p.year, p.category, p.material, p.technique, p.concept, p.mainImage, p.conceptImage, p.researchImage1, p.researchImage2, p.processImage1, p.processImage2, p.resultImage, p.researchText, p.processText, p.gallery);
+  }
+}
+
 // Migration: Add gallery column if it doesn't exist
 try {
   db.exec("ALTER TABLE projects ADD COLUMN gallery TEXT");
