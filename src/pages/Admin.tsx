@@ -6,16 +6,22 @@ import { Plus, Trash2, Edit2, X, Save, Upload, Image as ImageIcon } from "lucide
 export default function Admin() {
   const [password, setPassword] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [activeTab, setActiveTab] = useState<"projects" | "about" | "contact">("projects");
   const [projects, setProjects] = useState<Project[]>([]);
   const [editingProject, setEditingProject] = useState<Partial<Project> | null>(null);
+  const [aboutContent, setAboutContent] = useState<any>(null);
+  const [contactContent, setContactContent] = useState<any>(null);
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleLogin = (e: FormEvent) => {
     e.preventDefault();
     if (password === "2324") {
       setIsAuthorized(true);
       fetchProjects();
+      fetchSettings();
     } else {
       setError("Invalid password");
     }
@@ -25,6 +31,39 @@ export default function Admin() {
     fetch("/api/projects")
       .then((res) => res.json())
       .then((data) => setProjects(data));
+  };
+
+  const fetchSettings = () => {
+    fetch("/api/settings/about_content")
+      .then(res => res.json())
+      .then(data => setAboutContent(data))
+      .catch(err => console.error("Failed to fetch about settings", err));
+    
+    fetch("/api/settings/contact_content")
+      .then(res => res.json())
+      .then(data => setContactContent(data))
+      .catch(err => console.error("Failed to fetch contact settings", err));
+  };
+
+  const handleSaveSettings = async (key: string, value: any) => {
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/settings/${key}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, value }),
+      });
+      if (res.ok) {
+        alert("Settings saved successfully");
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error || "Failed to save settings"}`);
+      }
+    } catch (err) {
+      alert("Failed to save settings. Please check your connection.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>, field: keyof Project | "gallery") => {
@@ -80,20 +119,31 @@ export default function Admin() {
     e.preventDefault();
     if (!editingProject) return;
 
-    const method = editingProject.id ? "PUT" : "POST";
-    const url = editingProject.id 
-      ? `/api/admin/projects/${editingProject.id}` 
-      : "/api/admin/projects";
+    setIsSaving(true);
+    try {
+      const method = editingProject.id ? "PUT" : "POST";
+      const url = editingProject.id 
+        ? `/api/admin/projects/${editingProject.id}` 
+        : "/api/admin/projects";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password, project: editingProject }),
-    });
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, project: editingProject }),
+      });
 
-    if (res.ok) {
-      setEditingProject(null);
-      fetchProjects();
+      if (res.ok) {
+        alert("Project saved successfully");
+        setEditingProject(null);
+        fetchProjects();
+      } else {
+        const data = await res.json();
+        alert(`Error: ${data.error || "Failed to save project"}`);
+      }
+    } catch (err) {
+      alert("Failed to save project. Please check your connection.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -122,34 +172,143 @@ export default function Admin() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20">
-      <div className="flex justify-between items-center mb-12">
-        <h1 className="text-3xl font-light tracking-tight">Project Management</h1>
-        <button 
-          onClick={() => setEditingProject({ category: "Textile", gallery: [] })}
-          className="flex items-center space-x-2 bg-black text-white px-6 py-3 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors"
-        >
-          <Plus size={16} />
-          <span>Add Project</span>
-        </button>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 space-y-6 md:space-y-0">
+        <h1 className="text-3xl font-light tracking-tight">Management</h1>
+        <div className="flex space-x-8 border-b border-black/5 pb-2">
+          {(["projects", "about", "contact"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`text-[10px] uppercase tracking-[0.2em] transition-colors ${
+                activeTab === tab ? "text-black font-bold" : "text-black/30 hover:text-black"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        {projects.map((project) => (
-          <div key={project.id} className="flex items-center justify-between p-6 border border-black/5 hover:border-black/20 transition-colors">
-            <div className="flex items-center space-x-6">
-              <img src={project.mainImage} className="w-16 h-16 object-cover bg-neutral-100" referrerPolicy="no-referrer" />
-              <div>
-                <h3 className="text-sm font-medium">{project.title}</h3>
-                <p className="text-[10px] text-black/40 uppercase tracking-widest">{project.year} — {project.category}</p>
-              </div>
-            </div>
-            <div className="flex space-x-4">
-              <button onClick={() => setEditingProject(project)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors"><Edit2 size={16} /></button>
-              <button onClick={() => handleDelete(project.id)} className="p-2 hover:bg-red-50 text-red-500 rounded-full transition-colors"><Trash2 size={16} /></button>
-            </div>
+      {activeTab === "projects" && (
+        <>
+          <div className="flex justify-end mb-8">
+            <button 
+              onClick={() => setEditingProject({ category: "Textile", gallery: [] })}
+              className="flex items-center space-x-2 bg-black text-white px-6 py-3 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors"
+            >
+              <Plus size={16} />
+              <span>Add Project</span>
+            </button>
           </div>
-        ))}
-      </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {projects.map((project) => (
+              <div key={project.id} className="flex items-center justify-between p-6 border border-black/5 hover:border-black/20 transition-colors bg-white/50">
+                <div className="flex items-center space-x-6">
+                  <img src={project.mainImage} className="w-16 h-16 object-cover bg-neutral-100" referrerPolicy="no-referrer" />
+                  <div>
+                    <h3 className="text-sm font-medium">{project.title}</h3>
+                    <p className="text-[10px] text-black/40 uppercase tracking-widest">{project.year} — {project.category}</p>
+                  </div>
+                </div>
+                <div className="flex space-x-4">
+                  <button onClick={() => setEditingProject(project)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors"><Edit2 size={16} /></button>
+                  <button onClick={() => handleDelete(project.id)} className="p-2 hover:bg-red-50 text-red-500 rounded-full transition-colors"><Trash2 size={16} /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {activeTab === "about" && aboutContent && (
+        <div className="max-w-2xl space-y-8">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Name</label>
+            <input 
+              value={aboutContent.name || ""} 
+              onChange={e => setAboutContent({...aboutContent, name: e.target.value})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Role</label>
+            <input 
+              value={aboutContent.role || ""} 
+              onChange={e => setAboutContent({...aboutContent, role: e.target.value})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Bio</label>
+            <textarea 
+              rows={6}
+              value={aboutContent.bio || ""} 
+              onChange={e => setAboutContent({...aboutContent, bio: e.target.value})}
+              className="w-full border border-black/10 p-4 outline-none focus:border-black transition-colors text-sm bg-transparent"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Interests (Comma separated)</label>
+            <input 
+              value={aboutContent.interests?.join(", ") || ""} 
+              onChange={e => setAboutContent({...aboutContent, interests: e.target.value.split(",").map(s => s.trim()).filter(s => s !== "")})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Location / Footer Text</label>
+            <input 
+              value={aboutContent.location || ""} 
+              onChange={e => setAboutContent({...aboutContent, location: e.target.value})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <button 
+            onClick={() => handleSaveSettings("about_content", aboutContent)}
+            disabled={isSaving}
+            className="bg-black text-white px-8 py-4 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors disabled:bg-black/40"
+          >
+            {isSaving ? "Saving..." : "Save About Content"}
+          </button>
+        </div>
+      )}
+
+      {activeTab === "contact" && contactContent && (
+        <div className="max-w-2xl space-y-8">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Email</label>
+            <input 
+              value={contactContent.email || ""} 
+              onChange={e => setContactContent({...contactContent, email: e.target.value})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Instagram</label>
+            <input 
+              value={contactContent.instagram || ""} 
+              onChange={e => setContactContent({...contactContent, instagram: e.target.value})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-black/40">Location</label>
+            <input 
+              value={contactContent.location || ""} 
+              onChange={e => setContactContent({...contactContent, location: e.target.value})}
+              className="w-full border-b border-black/10 py-2 outline-none focus:border-black transition-colors bg-transparent"
+            />
+          </div>
+          <button 
+            onClick={() => handleSaveSettings("contact_content", contactContent)}
+            disabled={isSaving}
+            className="bg-black text-white px-8 py-4 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors disabled:bg-black/40"
+          >
+            {isSaving ? "Saving..." : "Save Contact Content"}
+          </button>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {editingProject && (
@@ -386,9 +545,13 @@ export default function Admin() {
                 </div>
 
                 <div className="pt-8">
-                  <button type="submit" className="w-full bg-black text-white py-4 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors flex items-center justify-center space-x-2">
+                  <button 
+                    type="submit" 
+                    disabled={isSaving}
+                    className="w-full bg-black text-white py-4 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors flex items-center justify-center space-x-2 disabled:bg-black/40"
+                  >
                     <Save size={16} />
-                    <span>Save Project</span>
+                    <span>{isSaving ? "Saving..." : "Save Project"}</span>
                   </button>
                 </div>
               </div>

@@ -46,27 +46,40 @@ db.exec(`
     resultImage TEXT,
     researchText TEXT,
     processText TEXT,
-    gallery TEXT -- JSON array of image URLs
-  )
+    gallery TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS site_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );
 `);
+
+// Seed site settings if empty
+const settingsCount = db.prepare("SELECT COUNT(*) as count FROM site_settings").get() as { count: number };
+if (settingsCount.count === 0) {
+  const insert = db.prepare("INSERT INTO site_settings (key, value) VALUES (?, ?)");
+  insert.run("about_content", JSON.stringify({
+    name: "Eunpyo",
+    role: "Textile Designer",
+    bio: "Based in Seoul, Eunpyo is a textile designer exploring the intersection of traditional craftsmanship and contemporary aesthetics. Her work focuses on the tactile quality of materials and the stories they tell through weave and texture.",
+    interests: ["Sustainable Materials", "Hand Weaving", "Digital Jacquard", "Natural Dyeing"],
+    education: [
+      { year: "2018-2022", degree: "BFA in Textile Design", school: "Seoul National University" }
+    ]
+  }));
+  insert.run("contact_content", JSON.stringify({
+    email: "studio@eunpyo.com",
+    instagram: "@eunpyo_textile",
+    location: "Seoul, South Korea"
+  }));
+}
 
 // Migration: Add gallery column if it doesn't exist
 try {
   db.exec("ALTER TABLE projects ADD COLUMN gallery TEXT");
 } catch (e) {
   // Column already exists
-}
-
-// Seed data if empty
-const count = db.prepare("SELECT COUNT(*) as count FROM projects").get() as { count: number };
-if (count.count === 0) {
-  const insert = db.prepare(`
-    INSERT INTO projects (title, year, category, material, technique, concept, mainImage, resultImage, gallery)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  insert.run("Woven Narratives", "2023", "Textile", "Cotton, Silk", "Hand weaving", "Exploring the intersection of memory and texture.", "https://picsum.photos/seed/textile1/1200/800", "https://picsum.photos/seed/textile1-res/1200/800", "[]");
-  insert.run("Organic Forms", "2024", "Drawing", "Ink on Paper", "Stippling", "Capturing the fluid motion of natural elements.", "https://picsum.photos/seed/drawing1/1200/800", "https://picsum.photos/seed/drawing1-res/1200/800", "[]");
-  insert.run("Urban Textures", "2023", "Photography", "Digital Photography", "Macro", "Finding beauty in the decay of city surfaces.", "https://picsum.photos/seed/photo1/1200/800", "https://picsum.photos/seed/photo1-res/1200/800", "[]");
 }
 
 async function startServer() {
@@ -91,6 +104,15 @@ async function startServer() {
     }
   });
 
+  app.get("/api/settings/:key", (req, res) => {
+    const setting = db.prepare("SELECT value FROM site_settings WHERE key = ?").get(req.params.key) as { value: string } | undefined;
+    if (setting) {
+      res.json(JSON.parse(setting.value));
+    } else {
+      res.status(404).json({ error: "Setting not found" });
+    }
+  });
+
   // Upload endpoint
   app.post("/api/upload", upload.single("image"), (req: any, res) => {
     if (!req.file) {
@@ -102,6 +124,15 @@ async function startServer() {
 
   // Admin routes (Simple password check)
   const ADMIN_PASSWORD = "2324";
+
+  app.post("/api/admin/settings/:key", (req, res) => {
+    const { password, value } = req.body;
+    if (password !== ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    db.prepare("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)").run(req.params.key, JSON.stringify(value));
+    res.json({ success: true });
+  });
 
   app.post("/api/admin/projects", (req, res) => {
     const { password, project } = req.body;

@@ -1,7 +1,18 @@
 import { motion } from "motion/react";
 import { Instagram, Mail, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Contact() {
+  const [content, setContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/settings/contact_content")
+      .then(res => res.json())
+      .then(data => setContent(data));
+  }, []);
+
+  if (!content) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -15,19 +26,19 @@ export default function Contact() {
         <div className="space-y-4">
           <div className="flex justify-center text-black/20"><Mail size={32} strokeWidth={1} /></div>
           <h3 className="text-[10px] uppercase tracking-[0.3em] text-black/40">Email</h3>
-          <p className="text-sm">yourname@email.com</p>
+          <p className="text-sm">{content.email}</p>
         </div>
 
         <div className="space-y-4">
           <div className="flex justify-center text-black/20"><Instagram size={32} strokeWidth={1} /></div>
           <h3 className="text-[10px] uppercase tracking-[0.3em] text-black/40">Instagram</h3>
-          <p className="text-sm">@yourinstagram</p>
+          <p className="text-sm">{content.instagram}</p>
         </div>
 
         <div className="space-y-4">
           <div className="flex justify-center text-black/20"><MapPin size={32} strokeWidth={1} /></div>
           <h3 className="text-[10px] uppercase tracking-[0.3em] text-black/40">Studio</h3>
-          <p className="text-sm">Seoul, South Korea</p>
+          <p className="text-sm">{content.location}</p>
         </div>
       </div>
 

@@ -12,7 +12,14 @@ import { cn } from "./utils";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [about, setAbout] = useState<any>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    fetch("/api/settings/about_content")
+      .then(res => res.json())
+      .then(data => setAbout(data));
+  }, []);
 
   const navLinks = [
     { name: "Projects", path: "/projects" },
@@ -24,7 +31,7 @@ function Navigation() {
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#FFFDF0]/80 backdrop-blur-sm border-b border-black/5">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link to="/" className="text-xl font-medium tracking-tighter">
-          Eunpyo
+          {about?.name || "Eunpyo"}
         </Link>
 
         {/* Desktop Nav */}
@@ -78,10 +85,18 @@ function Navigation() {
 }
 
 function Footer() {
+  const [about, setAbout] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/settings/about_content")
+      .then(res => res.json())
+      .then(data => setAbout(data));
+  }, []);
+
   return (
     <footer className="py-20 px-6 border-t border-black/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 text-black/40 text-xs uppercase tracking-widest">
-        <div>© 2024 Eunpyo. ALL RIGHTS RESERVED.</div>
+        <div>© {new Date().getFullYear()} {about?.name || "Eunpyo"}. ALL RIGHTS RESERVED.</div>
         <div className="flex space-x-8">
           <a href="#" className="hover:text-black transition-colors">Instagram</a>
           <a href="#" className="hover:text-black transition-colors">Email</a>

@@ -1,6 +1,17 @@
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 
 export default function About() {
+  const [content, setContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/settings/about_content")
+      .then(res => res.json())
+      .then(data => setContent(data));
+  }, []);
+
+  if (!content) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -20,26 +31,26 @@ export default function About() {
         
         <div className="space-y-12">
           <div>
-            <h1 className="text-3xl font-light tracking-tight mb-2">Eunpyo</h1>
-            <p className="text-xs uppercase tracking-[0.2em] text-black/40">Textile Designer</p>
+            <h1 className="text-3xl font-light tracking-tight mb-2">{content.name}</h1>
+            <p className="text-xs uppercase tracking-[0.2em] text-black/40">{content.role}</p>
           </div>
 
           <p className="text-xl font-light leading-relaxed text-black/80">
-            Textile designer exploring material, texture and visual narratives through textile, drawing and photography.
+            {content.bio}
           </p>
 
           <div className="space-y-4">
             <h3 className="text-[10px] uppercase tracking-[0.3em] text-black/40">Interests</h3>
             <ul className="space-y-2 text-sm tracking-wide">
-              <li>Textile</li>
-              <li>Drawing</li>
-              <li>Photography</li>
+              {content.interests?.map((interest: string, idx: number) => (
+                <li key={idx}>{interest}</li>
+              ))}
             </ul>
           </div>
 
           <div className="pt-12 border-t border-black/5">
             <p className="text-sm leading-relaxed text-black/60">
-              Based in Seoul, working globally. Focused on sustainable materials and traditional techniques reimagined for modern contexts.
+              {content.location || "Based in Seoul, working globally."}
             </p>
           </div>
         </div>
