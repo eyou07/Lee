@@ -165,7 +165,7 @@ export default function Admin() {
             />
             {error && <p className="text-red-500 text-[10px] uppercase tracking-widest">{error}</p>}
           </div>
-          <button type="submit" className="w-full bg-black text-white py-3 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors">
+          <button type="submit" className="w-full bg-black text-white py-3 text-xs uppercase tracking-widest hover:bg-accent-dark hover:text-black transition-colors">
             Login
           </button>
         </form>
@@ -182,11 +182,17 @@ export default function Admin() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`text-[10px] uppercase tracking-[0.2em] transition-colors ${
+              className={`text-[10px] uppercase tracking-[0.2em] transition-colors relative py-1 ${
                 activeTab === tab ? "text-black font-bold" : "text-black/30 hover:text-black"
               }`}
             >
               {tab}
+              {activeTab === tab && (
+                <motion.div 
+                  layoutId="admin-tab-underline"
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-accent-dark"
+                />
+              )}
             </button>
           ))}
         </div>
@@ -197,7 +203,7 @@ export default function Admin() {
           <div className="flex justify-end mb-8">
             <button 
               onClick={() => setEditingProject({ category: "Textile", gallery: [] })}
-              className="flex items-center space-x-2 bg-black text-white px-6 py-3 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors"
+              className="flex items-center space-x-2 bg-black text-white px-6 py-3 text-xs uppercase tracking-widest hover:bg-accent-dark hover:text-black transition-colors"
             >
               <Plus size={16} />
               <span>Add Project</span>
@@ -586,7 +592,7 @@ export default function Admin() {
                   <button 
                     type="submit" 
                     disabled={isSaving || isUploading}
-                    className="w-full bg-black text-white py-4 text-xs uppercase tracking-widest hover:bg-black/80 transition-colors flex items-center justify-center space-x-2 disabled:bg-black/40"
+                    className="w-full bg-black text-white py-4 text-xs uppercase tracking-widest hover:bg-accent-dark hover:text-black transition-colors flex items-center justify-center space-x-2 disabled:bg-black/40"
                   >
                     <Save size={16} />
                     <span>{isSaving ? "Saving..." : isUploading ? "Uploading..." : "Save Project"}</span>

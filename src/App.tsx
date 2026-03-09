@@ -28,7 +28,7 @@ function Navigation() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-[#FFFDF0]/80 backdrop-blur-sm border-b border-black/5">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-sm border-b border-black/5">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link to="/" className="text-xl font-medium tracking-tighter">
           {about?.name || "Eunpyo"}
@@ -41,11 +41,17 @@ function Navigation() {
               key={link.path}
               to={link.path}
               className={cn(
-                "text-sm uppercase tracking-widest transition-colors hover:text-black/50",
+                "text-sm uppercase tracking-widest transition-colors hover:text-black/50 relative",
                 location.pathname === link.path ? "text-black font-semibold" : "text-black/60"
               )}
             >
               {link.name}
+              {location.pathname === link.path && (
+                <motion.div 
+                  layoutId="nav-underline"
+                  className="absolute -bottom-1 left-0 w-full h-0.5 bg-accent-dark"
+                />
+              )}
             </Link>
           ))}
         </div>
@@ -63,7 +69,7 @@ function Navigation() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-20 left-0 w-full bg-[#FFFDF0] border-b border-black/5 md:hidden"
+            className="absolute top-20 left-0 w-full bg-white border-b border-black/5 md:hidden"
           >
             <div className="flex flex-col p-6 space-y-6">
               {navLinks.map((link) => (
@@ -108,7 +114,7 @@ function Footer() {
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#FFFDF0] font-sans text-black selection:bg-black selection:text-white">
+      <div className="min-h-screen bg-white font-sans text-black selection:bg-accent selection:text-black">
         <Navigation />
         <main className="pt-20">
           <AnimatePresence mode="wait">

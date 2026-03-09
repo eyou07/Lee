@@ -1,12 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --color-accent: #fdf2f8; /* very light pink */
+  --color-accent-dark: #fbcfe8; /* pink-200 */
 }
 
 @layer base {
   body {
-    @apply antialiased bg-[#FFFDF0] text-black;
+    @apply antialiased bg-white text-black;
   }
 }
