@@ -90,17 +90,20 @@ if (projectsCount.count === 0) {
       category: "Textile",
       material: "Silk, Cotton, Linen",
       technique: "Hand Weaving",
-      concept: "Exploring the layers of memory through overlapping textures.",
-      mainImage: "https://picsum.photos/seed/textile1/1200/1600",
-      conceptImage: "https://picsum.photos/seed/concept1/1200/800",
-      researchImage1: "https://picsum.photos/seed/res1/800/800",
-      researchImage2: "https://picsum.photos/seed/res2/800/800",
-      processImage1: "https://picsum.photos/seed/proc1/800/800",
-      processImage2: "https://picsum.photos/seed/proc2/800/800",
-      resultImage: "https://picsum.photos/seed/resul1/1200/1600",
-      researchText: "Initial research focused on traditional Korean weaving patterns.",
-      processText: "The process involved dyeing the silk threads with natural indigo.",
-      gallery: JSON.stringify(["https://picsum.photos/seed/gal1/800/800", "https://picsum.photos/seed/gal2/800/800"])
+      concept: "Exploring the layers of memory through overlapping textures and traditional Korean weaving patterns.",
+      mainImage: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1200&auto=format&fit=crop",
+      conceptImage: "https://images.unsplash.com/photo-1544006659-f0b21f04cb1d?q=80&w=1200&auto=format&fit=crop",
+      researchImage1: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800&auto=format&fit=crop",
+      researchImage2: "https://images.unsplash.com/photo-1551732998-9573f695fdbb?q=80&w=800&auto=format&fit=crop",
+      processImage1: "https://images.unsplash.com/photo-1606103836293-0a063ee20566?q=80&w=800&auto=format&fit=crop",
+      processImage2: "https://images.unsplash.com/photo-1584992236310-6edddc08acff?q=80&w=800&auto=format&fit=crop",
+      resultImage: "https://images.unsplash.com/photo-1550684847-75bdda21cc95?q=80&w=1200&auto=format&fit=crop",
+      researchText: "Initial research focused on traditional Korean weaving patterns and their symbolic meanings in modern context.",
+      processText: "The process involved dyeing the silk threads with natural indigo and experimenting with different tension settings on the loom.",
+      gallery: JSON.stringify([
+        "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1550684847-75bdda21cc95?q=80&w=800&auto=format&fit=crop"
+      ])
     },
     {
       title: "Digital Tactility",
@@ -108,17 +111,20 @@ if (projectsCount.count === 0) {
       category: "Drawing",
       material: "Digital Print on Silk",
       technique: "Digital Jacquard",
-      concept: "Translating digital glitches into physical woven structures.",
-      mainImage: "https://picsum.photos/seed/textile2/1200/1600",
-      conceptImage: "https://picsum.photos/seed/concept2/1200/800",
-      researchImage1: "https://picsum.photos/seed/res3/800/800",
-      researchImage2: "https://picsum.photos/seed/res4/800/800",
-      processImage1: "https://picsum.photos/seed/proc3/800/800",
-      processImage2: "https://picsum.photos/seed/proc4/800/800",
-      resultImage: "https://picsum.photos/seed/resul2/1200/1600",
-      researchText: "Studying the visual language of data corruption.",
-      processText: "Programming the Jacquard loom to interpret pixel data.",
-      gallery: JSON.stringify(["https://picsum.photos/seed/gal3/800/800", "https://picsum.photos/seed/gal4/800/800"])
+      concept: "Translating digital glitches and data corruption into physical woven structures using Jacquard looms.",
+      mainImage: "https://images.unsplash.com/photo-1558350315-8aa00e8e4590?q=80&w=1200&auto=format&fit=crop",
+      conceptImage: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1200&auto=format&fit=crop",
+      researchImage1: "https://images.unsplash.com/photo-1550684847-75bdda21cc95?q=80&w=800&auto=format&fit=crop",
+      researchImage2: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800&auto=format&fit=crop",
+      processImage1: "https://images.unsplash.com/photo-1551732998-9573f695fdbb?q=80&w=800&auto=format&fit=crop",
+      processImage2: "https://images.unsplash.com/photo-1606103836293-0a063ee20566?q=80&w=800&auto=format&fit=crop",
+      resultImage: "https://images.unsplash.com/photo-1558350315-8aa00e8e4590?q=80&w=1200&auto=format&fit=crop",
+      researchText: "Studying the visual language of data corruption and how it can be represented through textile textures.",
+      processText: "Programming the Jacquard loom to interpret pixel data as specific weave structures and thread densities.",
+      gallery: JSON.stringify([
+        "https://images.unsplash.com/photo-1558350315-8aa00e8e4590?q=80&w=800&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop"
+      ])
     }
   ];
 
